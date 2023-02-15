@@ -12,7 +12,7 @@ citekey: {{citekey}}
 {%- macro maxAnnotationsDate() -%}
    {%- set tempDate = "" -%}
 	{%- for a in annotations -%}
-		{%- set testDate = a.dateModified | format("YYYY-MM-DD#HH:mm:ss") -%}
+		{%- set testDate = a.date | format("YYYY-MM-DD#HH:mm:ss") -%}
 		{%- if testDate > tempDate or tempDate == ""-%}
 			{%- set tempDate = testDate -%}
 		{%- endif -%}
@@ -23,7 +23,7 @@ citekey: {{citekey}}
 {%- macro minAnnotationsDate() -%}
    {%- set tempDate = "" -%}
 	{%- for a in annotations -%}
-		{%- set testDate = a.dateAdded | format("YYYY-MM-DD#HH:mm:ss") -%}
+		{%- set testDate = a.date | format("YYYY-MM-DD#HH:mm:ss") -%}
 		{%- if testDate < tempDate or tempDate == ""-%}
 			{%- set tempDate = testDate -%}
 		{%- endif -%}
