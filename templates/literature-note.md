@@ -8,8 +8,7 @@ sourcetype: {{itemType}}
 extra: {{extra}}
 citekey: {{citekey}}
 ---
-
-{# infer latest annotation Date #}
+{#- infer latest annotation Date -#}
 {%- macro maxAnnotationsDate() -%}
    {%- set tempDate = "" -%}
 	{%- for a in annotations -%}
@@ -20,7 +19,6 @@ citekey: {{citekey}}
 	{%- endfor -%}
 	{{tempDate}}
 {%- endmacro -%}
-
 {# infer earliest annotation date #}
 {%- macro minAnnotationsDate() -%}
    {%- set tempDate = "" -%}
@@ -32,7 +30,6 @@ citekey: {{citekey}}
 	{%- endfor -%}
 	{{tempDate}}
 {%- endmacro -%}
-
 {# infer latest note date #}
 {%- macro maxNotesDate() -%}
    {%- set tempDate = "" -%}
@@ -44,8 +41,7 @@ citekey: {{citekey}}
 	{%- endfor -%}
 	{{tempDate}}
 {%- endmacro -%}
-
-{# infer earliest note date #}
+{#- infer earliest note date -#}
 {%- macro minNotesDate() -%}
    {%- set tempDate = "" -%}
 	{%- for n in notes -%}
@@ -56,7 +52,6 @@ citekey: {{citekey}}
 	{%- endfor -%}
 	{{tempDate}}
 {%- endmacro -%}
-
 {# find earliest date of two dates #}
 {%- macro minDate(min1, min2) -%}
 		{%- if min1 <= min2 -%}
@@ -65,7 +60,6 @@ citekey: {{citekey}}
 		    {{min2}}
 		{%- endif -%}
 {%- endmacro -%}
-
 {# find latest date of two dates #}
 {%- macro maxDate(min1, min2) -%}
 		{%- if min1 >= min2 -%}
@@ -74,7 +68,6 @@ citekey: {{citekey}}
 		    {{min2}}
 		{%- endif -%}
 {%- endmacro -%}
-
 {# lookup Zotero colors in annotations with categories #}
 {%- macro colorCategoryToName(colorCategory) -%}
 	{%- switch colorCategory -%}
@@ -92,7 +85,6 @@ citekey: {{citekey}}
 			"other"
 	{%- endswitch -%}
 {%- endmacro -%}
-
 {# lookup callout headers by type of annotation #}
 {%- macro calloutHeader(type) -%}
 	{%- switch type -%}
@@ -108,8 +100,7 @@ citekey: {{citekey}}
 			Note
 	{%- endswitch -%}
 {%- endmacro %}
-
-{# handle space characters in zotero tags #}
+{#- handle space characters in zotero tags -#}
 {%- set space = joiner(' ') -%} 
 {%- macro printTags(rawTags) -%}
 	{%- if rawTags.length > 0 -%}
@@ -118,8 +109,7 @@ citekey: {{citekey}}
 		{%- endfor -%}
 	{%- endif -%}
 {%- endmacro %}
-
-{# handle | characters in zotero strings used in MD #}
+{#- handle | characters in zotero strings used in MD -#}
 {%- macro formatCell(cellText) -%}
 {{ cellText | replace("|","❕")}}
 {%- endmacro %}
@@ -137,6 +127,7 @@ citekey: {{citekey}}
 > pdf:: {{pdfZoteroLink}}
 
 > [!note]- References:  
+> 
 > | title | proxy note | desktopURI |
 > | --- | --- | --- |
 {% if relations.length > 0 -%}
