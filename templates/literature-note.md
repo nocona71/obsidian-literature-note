@@ -180,7 +180,7 @@ aliases: ["{%- if authors -%}
 {{printTags(tags)}}
 > [!info]- Metadata
 {{generateFields("> ") -}}
-{% if relations -%}
+{% if relations.length > 0 -%}
 > 
 > > [!note]- References:  
 > >
@@ -190,36 +190,15 @@ aliases: ["{%- if authors -%}
 > | {{formatCell(r.title)}} | [[@{{r.citekey}}]] | [Zotero Link]({{r.desktopURI}}) |
 {% endfor -%}
 {%- endif %}
-
+{%- if abstract.length > 0 -%}
 > [!info]+ abstract
 >
-{{generateField("> ", "abstract", abstractNote)}}
-
-
-{% persist "annotations" %}
-%% ## Annotations %%
-{% set newAnnotations = annotations | filterby("date", "dateafter", lastImportDate) -%}
-{% if newAnnotations.length > 0 %}
-⬇️*Imported (Annotations) on {{importDate | format("YYYY-MM-DD#HH:mm:ss")}}*⬇️
-{% for colorCategory, newAnnotations in newAnnotations | groupby("colorCategory") -%}
-#### {{colorCategoryToName(colorCategory | lower)}}
-{% for annotation in newAnnotations -%}
-> [!annotation-{% if annotation.color %}{{annotation.colorCategory | lower}}]{% endif %} {{calloutHeader(annotation.type)}}
-{%- if annotation.annotatedText %} 
-> {{annotation.annotatedText | nl2br }} (p. [{{annotation.page}}](zotero://open-pdf/library/items/{{annotation.attachment.itemKey}}?page={{annotation.page}}&annotation={{annotation.id}})){% endif %}{%- if annotation.imageRelativePath %}
-> ![[{{annotation.imageRelativePath}}|300]]
-{%- endif %}{%- if annotation.ocrText %}
-> {{annotation.ocrText | nl2br}}{%- endif %}
-{%- if annotation.comment %} 
-> {{annotation.comment | nl2br }}{% endif %}
-> [Page {{annotation.page}}](zotero://open-pdf/library/items/{{annotation.attachment.itemKey}}?page={{annotation.page}}) [[{{annotation.date | format("YYYY-MM-DD#HH:mm")}}]]
-> {{printTags(annotation.tags)}}
-
-{% endfor %}
-{%- endfor -%}
-{%- endif -%}
-
-{% set newNotes = notes | filterby("dateModified", "dateafter", lastImportDate) -%}
+{{-generateField("> ", "abstract", abstractNote)-}}
+{% endif %}
+🔥🔥🔥everything below above this line might change during an update 🔥🔥🔥
+{% persist "notes" %}
+{{ "" }}
+{%- set newNotes = notes | filterby("dateModified", "dateafter", lastImportDate) -%}
 {% if newNotes.length > 0 %}
 ⬇️*Imported (Notes) on: {{importDate | format("YYYY-MM-DD#HH:mm:ss")}}*⬇️
 {% for note in newNotes %}
@@ -230,4 +209,33 @@ aliases: ["{%- if authors -%}
 ---
 {% endfor %}
 {% endif -%} 
+
+{% endpersist -%}
+{{ " " }}
+{% persist "annotations" %}
+{{ " " }}
+{%- set newAnnotations = annotations | filterby("date", "dateafter", lastImportDate) -%}
+{%- if newAnnotations.length > 0 -%}
+{{ " " }}
+⬇️*Imported (Annotations) on {{importDate | format("YYYY-MM-DD#HH:mm:ss")}}*⬇️
+{% for colorCategory, newAnnotations in newAnnotations | groupby("colorCategory") -%}
+#### {{colorCategoryToName(colorCategory | lower)}}
+{% for annotation in newAnnotations -%}
+> [!annotation-{% if annotation.color %}{{annotation.colorCategory | lower}}]{% endif %} {{calloutHeader(annotation.type)}}
+{%- if annotation.annotatedText.length > 0 -%} 
+> {{annotation.annotatedText | nl2br }} (p. [{{annotation.page}}](zotero://open-pdf/library/items/{{annotation.attachment.itemKey}}?page={{annotation.page}}&annotation={{annotation.id}})){% endif %}{%- if annotation.imageRelativePath -%}
+> ![[{{annotation.imageRelativePath}}|300]]
+{%- endif %}{%- if annotation.ocrText %}
+> {{annotation.ocrText | nl2br}}{%- endif %}
+{%- if annotation.comment %} 
+> {{annotation.comment | nl2br }}{% endif %}
+> [[{{annotation.date | format("YYYY-MM-DD#HH:mm")}}]]
+{%- if annotation.tags.length > 0 -%} 
+> {{printTags(annotation.tags)}}
+{%- endif -%}
+{% endfor -%}
+{% endfor %}
+{%- endif -%}
+
+
 {% endpersist -%}
