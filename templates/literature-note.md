@@ -215,7 +215,7 @@ aliases: ["{%- if authors -%}
 {% persist "annotations" %}
 {{ " " }}
 {%- set newAnnotations = annotations | filterby("date", "dateafter", lastImportDate) -%}
-{%- if newAnnotations.length > 0 -%}
+{% if newAnnotations.length > 0 %}
 {{ " " }}
 ⬇️*Imported (Annotations) on {{importDate | format("YYYY-MM-DD#HH:mm:ss")}}*⬇️
 {% for colorCategory, newAnnotations in newAnnotations | groupby("colorCategory") -%}
@@ -228,14 +228,14 @@ aliases: ["{%- if authors -%}
 {%- endif %}{%- if annotation.ocrText %}
 > {{annotation.ocrText | nl2br}}{%- endif %}
 {%- if annotation.comment %} 
+>
 > {{annotation.comment | nl2br }}{% endif %}
 > [[{{annotation.date | format("YYYY-MM-DD#HH:mm")}}]]
-{%- if annotation.tags.length > 0 -%} 
+{%- if annotation.tags.length > 0 %} 
 > {{printTags(annotation.tags)}}
-{%- endif -%}
+{% endif %}
 {% endfor -%}
 {% endfor %}
 {%- endif -%}
-
 
 {% endpersist -%}
