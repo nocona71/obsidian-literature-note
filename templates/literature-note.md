@@ -75,14 +75,9 @@ aliases: ["{%- if authors -%}
 "blue": "#2ea8e5",
 "purple": "#a28ae5",
 "magenta": "#e56eee",
-"orange": "#f19837"
+"orange": "#f19837",
+"gray": "#aaaaaa"
 #}
-{%- set hexes = [
-"#5fb236","#ffd400",
-"#ff6666","#2ea8e5",
-"#a28ae5","#e56eee",
-"#f19837"]
--%}
 {%- set colorToColorCategorie = {
 "#5fb236": "green",
 "#ffd400": "yellow",
@@ -90,7 +85,8 @@ aliases: ["{%- if authors -%}
 "#2ea8e5": "blue",
 "#a28ae5": "purple",
 "#e56eee": "magenta",
-"#f19837": "orange"
+"#f19837": "orange",
+"#aaaaaa": "gray"
 }
 -%}
 {%- set colorCategoriesToType = {
@@ -100,7 +96,8 @@ aliases: ["{%- if authors -%}
 "blue": "Question / Understanding / Vocabulary",
 "purple": "Reference / Term to lookup later",
 "magenta": "Todo / Read later",
-"orange": "Undefined"
+"orange": "Undefined",
+"gray": "Undefined"
 }
 -%}
 {# lookup Zotero colors in annotations with categories #}

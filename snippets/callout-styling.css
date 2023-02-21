@@ -41,6 +41,11 @@
   --callout-icon: lucide-highlighter 
 }
 
+.callout[data-callout="annotation-gray"] {
+  --callout-color: 170, 170, 170;
+  --callout-icon: lucide-highlighter 
+}
+
 /* note */
 .callout[data-callout="note-yellow"] {
   --callout-color: 255, 212, 0;
