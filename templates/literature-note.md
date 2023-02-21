@@ -68,12 +68,39 @@ aliases: ["{%- if authors -%}
 		{%- endif -%}
 {%- endmacro -%}
 
-{%- set colorCategories = {
+{# colorCategorie to hex:
+"green": "#5fb236",
+"yellow": "#ffd400",
+"red": "#ff6666",
+"blue": "#2ea8e5",
+"purple": "#a28ae5",
+"magenta": "#e56eee",
+"orange": "#f19837"
+#}
+{%- set hexes = [
+"#5fb236","#ffd400",
+"#ff6666","#2ea8e5",
+"#a28ae5","#e56eee",
+"#f19837"]
+-%}
+{%- set colorToColorCategorie = {
+"#5fb236": "green",
+"#ffd400": "yellow",
+"#ff6666": "red",
+"#2ea8e5": "blue",
+"#a28ae5": "purple",
+"#e56eee": "magenta",
+"#f19837": "orange"
+}
+-%}
+{%- set colorCategoriesToType = {
 "yellow": "Relevant / Important",
 "red": "Disagree",
 "green": "Important to me",
 "blue": "Question / Understanding / Vocabulary",
-"purple": "Reference / Term to lookup later"
+"purple": "Reference / Term to lookup later",
+"magenta": "Todo / Read later",
+"orange": "Undefined"
 }
 -%}
 {# lookup Zotero colors in annotations with categories #}
@@ -84,6 +111,15 @@ aliases: ["{%- if authors -%}
 {{colorCategories["yellow"]}}
 {%endif%}
 {%- endmacro -%}
+
+{%- macro colorToName(noteColor) -%}
+{%- if colorToColorCategorie[noteColor]-%}
+{{colorCategoriesToType[colorToColorCategorie[noteColor]]}}
+{% else %}
+{{colorCategoriesToType["orange"]}}
+{%endif%}
+{%- endmacro -%}
+
 
 {%- set calloutHeaders = {
 "highlight": "Relevant / Important",
@@ -218,10 +254,13 @@ aliases: ["{%- if authors -%}
 {% if newAnnotations.length > 0 %}
 {{ " " }}
 ⬇️*Imported (Annotations) on {{importDate | format("YYYY-MM-DD#HH:mm:ss")}}*⬇️
-{% for colorCategory, newAnnotations in newAnnotations | groupby("colorCategory") -%}
-#### {{colorCategoryToName(colorCategory | lower)}}
-{% for annotation in newAnnotations -%}
-> [!annotation-{% if annotation.color %}{{annotation.colorCategory | lower}}]{% endif %} {{calloutHeader(annotation.type)}}
+{% for color, colorCategorie in colorToColorCategorie %}
+{#Filter empty colorCategorie#}
+{%- for annotation in newAnnotations | filterby ("color", "startswith", color) -%}
+{% if loop.first -%}
+#### {{colorToName(color | lower)-}}
+{% endif %}
+> [!annotation-{% if annotation.color %}{{colorToColorCategorie[annotation.color]}}]{% endif %} {{calloutHeader(annotation.type)}}
 {%- if annotation.annotatedText.length > 0 -%} 
 > {{annotation.annotatedText | nl2br }} (p. [{{annotation.page}}](zotero://open-pdf/library/items/{{annotation.attachment.itemKey}}?page={{annotation.page}}&annotation={{annotation.id}})){% endif %}{%- if annotation.imageRelativePath -%}
 > ![[{{annotation.imageRelativePath}}|300]]
