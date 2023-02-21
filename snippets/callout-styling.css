@@ -26,6 +26,21 @@
   --callout-icon: lucide-highlighter 
 }
 
+.callout[data-callout="annotation-purple"] {
+  --callout-color: 162, 138, 229;
+  --callout-icon: lucide-highlighter 
+}
+
+.callout[data-callout="annotation-magenta"] {
+  --callout-color: 229, 110, 238;
+  --callout-icon: lucide-highlighter 
+}
+
+.callout[data-callout="annotation-orange"] {
+  --callout-color: 241, 152, 55;
+  --callout-icon: lucide-highlighter 
+}
+
 /* note */
 .callout[data-callout="note-yellow"] {
   --callout-color: 255, 212, 0;
@@ -51,4 +66,3 @@
   --callout-color: 162, 138, 229;
   --callout-icon: lucide-sticky-note 
 }
-
