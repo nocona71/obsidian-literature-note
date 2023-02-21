@@ -186,16 +186,16 @@ aliases: ["{%- if authors -%}
 > >
 > > | title | proxy note | desktopURI |
 > > | --- | --- | --- |
-{%- for r in relations -%}
-> | {{formatCell(r.title)}} | [[@{{r.citekey}}]] | [Zotero Link]({{r.desktopURI}}) |
-{% endfor -%}
+{%- for r in relations %}
+> > | {{formatCell(r.title)}} | [[@{{r.citekey}}]] | [Zotero Link]({{r.desktopURI}}) |
+{%- endfor -%}
 {%- endif %}
 {%- if abstract.length > 0 -%}
 > [!info]+ abstract
 >
 {{-generateField("> ", "abstract", abstractNote)-}}
 {% endif %}
-🔥🔥🔥everything below above this line might change during an update 🔥🔥🔥
+🔥🔥🔥everything above this line might change during an update 🔥🔥🔥
 {% persist "notes" %}
 {{ "" }}
 {%- set newNotes = notes | filterby("dateModified", "dateafter", lastImportDate) -%}
