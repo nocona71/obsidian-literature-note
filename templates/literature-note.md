@@ -240,7 +240,7 @@ aliases: ["{%- if authors -%}
 {{ "" }}
 {#- change heading level -#}
 {{ note.note | replace ("# ","### ") }}
-[Link to note]({{ note.uri }})
+[Link to note](zotero://select/library/items/{{note.key}})
 {{printTags(note.tags)}}
 {{ "" }}
 ---
@@ -261,7 +261,7 @@ aliases: ["{%- if authors -%}
 {# {% if loop.first -%} #}
 {# #### {{colorToName(color | lower)-}} #}
 {# {% endif %} #}
-> [!annotation-{% if annotation.color %}{{colorToColorCategory[annotation.color]}}]{% endif %} {{calloutHeader(annotation.type)}}
+> [!annotation-{% if annotation.color %}{% if colorToColorCategory[annotation.color].length > 0 %}{{colorToColorCategory[annotation.color]}}{% else %}yellow{% endif %}]{% endif %} {{calloutHeader(annotation.type)}}
 {%- if annotation.annotatedText.length > 0 -%} 
 > {{-annotation.annotatedText | nl2br -}} (p. [{{annotation.page}}](zotero://open-pdf/library/items/{{annotation.attachment.itemKey}}?page={{annotation.page}}&annotation={{annotation.id}})){% endif %}{%- if annotation.imageRelativePath -%}
 > ![[{{annotation.imageRelativePath}}|300]]
