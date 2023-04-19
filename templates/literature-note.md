@@ -68,7 +68,7 @@ aliases: ["{%- if authors -%}
 		{%- endif -%}
 {%- endmacro -%}
 
-{# colorCategorie to hex:
+{# colorCategory to hex:
 "green": "#5fb236",
 "yellow": "#ffd400",
 "red": "#ff6666",
@@ -78,10 +78,11 @@ aliases: ["{%- if authors -%}
 "orange": "#f19837",
 "gray": "#aaaaaa"
 #}
-{%- set colorToColorCategorie = {
-"#5fb236": "green",
+
+{%- set colorToColorCategory = {
 "#ffd400": "yellow",
 "#ff6666": "red",
+"#5fb236": "green",
 "#2ea8e5": "blue",
 "#a28ae5": "purple",
 "#e56eee": "magenta",
@@ -89,40 +90,41 @@ aliases: ["{%- if authors -%}
 "#aaaaaa": "gray"
 }
 -%}
-{%- set colorCategoriesToType = {
+{%- set colorCategoryToType = {
 "yellow": "Relevant / Important",
 "red": "Disagree",
 "green": "Important to me",
 "blue": "Question / Understanding / Vocabulary",
 "purple": "Reference / Term to lookup later",
-"magenta": "Todo / Read later",
-"orange": "Undefined",
-"gray": "Undefined"
+"magenta": "margenta",
+"orange": "orange",
+"gray": "gray"
 }
 -%}
-{# lookup Zotero colors in annotations with categories #}
+{# lookup Zotero colors in annotations with Category #}
 {%- macro colorCategoryToName(noteColor) -%}
-{%- if colorCategories[noteColor]-%}
-{{colorCategories[noteColor]}}
+{%- if colorCategory[noteColor]-%}
+{{colorCategory[noteColor]}}
 {% else %}
-{{colorCategories["yellow"]}}
+{{colorCategory["yellow"]}}
 {%endif%}
 {%- endmacro -%}
 
 {%- macro colorToName(noteColor) -%}
-{%- if colorToColorCategorie[noteColor]-%}
-{{colorCategoriesToType[colorToColorCategorie[noteColor]]}}
+{%- if colorToColorCategory[noteColor]-%}
+{{colorCategoryToType[colorToColorCategory[noteColor]]}}
 {% else %}
-{{colorCategoriesToType["orange"]}}
+{{colorCategoryToType["orange"]}}
 {%endif%}
 {%- endmacro -%}
 
 
 {%- set calloutHeaders = {
-"highlight": "Relevant / Important",
-"strike": "Disagree",
-"underline": "Important to me",
-"image": "Question / Understanding / Vocabulary"
+"highlight": "Highlight",
+"strike": "Strike Through",
+"underline": "Underline",
+"note": "Sticky Note",
+"image": "Image"
 }
 -%}
 {# lookup callout headers by type of annotation #}
@@ -190,7 +192,8 @@ aliases: ["{%- if authors -%}
 "type": type,
 "itemtype": itemType,
 "language": language,
-"url": url
+"url": url,
+"abstract": abstractNote
 }
 -%}
 
@@ -211,6 +214,7 @@ aliases: ["{%- if authors -%}
 {%- endmacro -%}
 
 {{printTags(tags)}}
+{{ "" }}
 > [!info]- Metadata
 {{generateFields("> ") -}}
 {% if relations.length > 0 -%}
@@ -222,12 +226,9 @@ aliases: ["{%- if authors -%}
 {%- for r in relations %}
 > > | {{formatCell(r.title)}} | [[@{{r.citekey}}]] | [Zotero Link]({{r.desktopURI}}) |
 {%- endfor -%}
+{{ "" }}
 {%- endif %}
-{%- if abstract.length > 0 -%}
-> [!info]+ abstract
->
-{{-generateField("> ", "abstract", abstractNote)-}}
-{% endif %}
+{{ "" }}
 🔥🔥🔥everything above this line might change during an update 🔥🔥🔥
 {% persist "notes" %}
 {{ "" }}
@@ -236,9 +237,12 @@ aliases: ["{%- if authors -%}
 ⬇️*Imported (Notes) on: {{importDate | format("YYYY-MM-DD#HH:mm:ss")}}*⬇️
 {% for note in newNotes %}
 ### 🟨 Note (modified: {{ note.dateModified | format("YYYY-MM-DD#HH:mm:ss") }})
+{{ "" }}
+{#- change heading level -#}
 {{ note.note | replace ("# ","### ") }}
 [Link to note]({{ note.uri }})
 {{printTags(note.tags)}}
+{{ "" }}
 ---
 {% endfor %}
 {% endif -%} 
@@ -251,27 +255,28 @@ aliases: ["{%- if authors -%}
 {% if newAnnotations.length > 0 %}
 {{ " " }}
 ⬇️*Imported (Annotations) on {{importDate | format("YYYY-MM-DD#HH:mm:ss")}}*⬇️
-{% for color, colorCategorie in colorToColorCategorie %}
-{#Filter empty colorCategorie#}
-{%- for annotation in newAnnotations | filterby ("color", "startswith", color) -%}
-{% if loop.first -%}
-#### {{colorToName(color | lower)-}}
-{% endif %}
-> [!annotation-{% if annotation.color %}{{colorToColorCategorie[annotation.color]}}]{% endif %} {{calloutHeader(annotation.type)}}
+{# {% for color, colorCategory in colorToColorCategory %} #}
+{#-Filter empty colorCategory-#}
+{%- for annotation in newAnnotations -%}
+{# {% if loop.first -%} #}
+{# #### {{colorToName(color | lower)-}} #}
+{# {% endif %} #}
+> [!annotation-{% if annotation.color %}{{colorToColorCategory[annotation.color]}}]{% endif %} {{calloutHeader(annotation.type)}}
 {%- if annotation.annotatedText.length > 0 -%} 
-> {{annotation.annotatedText | nl2br }} (p. [{{annotation.page}}](zotero://open-pdf/library/items/{{annotation.attachment.itemKey}}?page={{annotation.page}}&annotation={{annotation.id}})){% endif %}{%- if annotation.imageRelativePath -%}
+> {{-annotation.annotatedText | nl2br -}} (p. [{{annotation.page}}](zotero://open-pdf/library/items/{{annotation.attachment.itemKey}}?page={{annotation.page}}&annotation={{annotation.id}})){% endif %}{%- if annotation.imageRelativePath -%}
 > ![[{{annotation.imageRelativePath}}|300]]
-{%- endif %}{%- if annotation.ocrText %}
-> {{annotation.ocrText | nl2br}}{%- endif %}
-{%- if annotation.comment %} 
+{%- endif %}{%- if annotation.ocrText -%}
+> {{-annotation.ocrText | nl2br-}}{%- endif -%}
+{%- if annotation.comment -%} 
 >
+> **comment:**
 > {{annotation.comment | nl2br }}{% endif %}
 > [[{{annotation.date | format("YYYY-MM-DD#HH:mm")}}]]
 {%- if annotation.tags.length > 0 %} 
 > {{printTags(annotation.tags)}}
 {% endif %}
 {% endfor -%}
-{% endfor %}
+{# {% endfor %} #}
 {%- endif -%}
 
 {% endpersist -%}
