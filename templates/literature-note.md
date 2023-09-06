@@ -1,12 +1,3 @@
----
-aliases: ["{%- if authors -%}
-{%- for author in authors -%}
-{{author}}
-{%- endfor -%}
-{%- endif -%}
-{%- if date -%} ({{date | format("YYYY")}})
-{%- endif -%} {{title}} {{caseTitle}}"]
----
 {#- infer latest annotation Date -#}
 {% macro maxAnnotationsDate() %}
    {%- set tempDate = "" -%}
@@ -18,7 +9,7 @@ aliases: ["{%- if authors -%}
 	{%- endfor -%}
 	{{tempDate}}
 {%- endmacro %}
-{# infer earliest annotation date #}
+{#- infer earliest annotation date -#}
 {%- macro minAnnotationsDate() -%}
    {%- set tempDate = "" -%}
 	{%- for a in annotations -%}
@@ -53,19 +44,39 @@ aliases: ["{%- if authors -%}
 {%- endmacro -%}
 {# find earliest date of two dates #}
 {%- macro minDate(min1, min2) -%}
-		{%- if min1 <= min2 -%}
-			{{min1}}
-		{%- else -%}
-		    {{min2}}
+	{%- if min1 == "" -%} 	
+		{%- if min2 != "" -%}
+			{{min2}} 
 		{%- endif -%}
+	{%- else -%}
+		{%- if min2 != "" -%}
+			{%- if min1 <= min2 -%}
+				{{min1}} 
+			{%- else -%}
+				{{min2}}
+			{%- endif -%}
+		{%- else -%}
+			{{min1}} 
+		{%- endif -%}
+	{%- endif -%}
 {%- endmacro -%}
 {# find latest date of two dates #}
 {%- macro maxDate(min1, min2) -%}
-		{%- if min1 >= min2 -%}
-			{{min1}}
-		{%- else -%}
-		    {{min2}}
+	{%- if min1 == "" -%} 	
+		{%- if min2 != "" -%}
+			{{min2}} 
 		{%- endif -%}
+	{%- else -%}
+		{%- if min2 != "" -%}
+			{%- if min1 >= min2 -%}
+				{{min1}} 
+			{%- else -%}
+				{{min2}}
+			{%- endif -%}
+		{%- else -%}
+			{{min1}} 
+		{%- endif -%}
+	{%- endif -%}
 {%- endmacro -%}
 
 {# colorCategory to hex:
@@ -161,7 +172,7 @@ aliases: ["{%- if authors -%}
 {# {%- set comma = joiner(', ') -%} 
 {%- macro generateCreators(prefix) -%}
 {%- for creatorType, creators in creators | groupby("creatorType") -%}
-{{prefix}}{{ creatorType }}:: {{ space() }} 
+{{prefix}}{{ creatorType }}::{{ space() }} 
     {%- for creator in creators -%}
         {{ creator.firstName }} {{ creator.lastName }} 
 		{%- if not loop.last -%}
@@ -171,52 +182,87 @@ aliases: ["{%- if authors -%}
 {% endfor -%}
 {%- endmacro -%} #}
 
-{%- set fields = {
-"title": title or caseTitle,
-"authors": authors,  
-"editors": editors,
-"directors": directors,
-"podcasters": podcasters,
-"scriptwriters": scriptwriters,
+{%- macro renderArray(items) -%}
+{%- if items -%}
+		[{{items | replace (";", ", ")}}]
+{%- endif %}	
+{%- endmacro %}
+
+{%- macro quote(s) -%}
+{%- if s -%}
+		"{{s}}"
+{%- endif %}	
+{%- endmacro %}
+
+{%- set inline_fields = {
+"abstract": abstractNote,
+"pdf": pdfZoteroLink, 
+"extra": quote(extra),
+"bibliography": quote(bibliography)
+}
+-%}
+
+
+{%- set frontmatter_fields = {
+"title": quote(title | replace ('"','')) or quote(caseTitle |  replace ('"','')),
+"authors": renderArray(authors),  
+"editors": renderArray(editors),
+"directors": renderArray(directors),
+"podcasters": renderArray(podcasters),
+"scriptwriters": renderArray(scriptwriters),
 "first-entry": minDate(minAnnotationsDate(), minNotesDate()),
 "last-entry": maxDate(maxAnnotationsDate(), maxNotesDate()),
 "online-uri": uri,
-"bibliography": bibliography,
-"pdf": pdfZoteroLink, 
 "year": formatDate(date, "YYYY"),
 "date": formatDate(date, "YYYY-MM-DD"),
-"extra": extra,
 "citekey": citekey,
 "pages": numPages,
 "running-time": runningTime,
 "type": type,
-"itemtype": itemType,
+"class": itemType,
 "language": language,
 "url": url,
-"abstract": abstractNote
+"isbn": ISBN,
+"cover": "https://covers.openlibrary.org/b/isbn/"+ISBN | replace ("-","")+"-M.jpg"
 }
 -%}
 
-{#- generate field safely -#}
-{%- macro generateField(prefix, f, p) -%}
-{%- if p -%}
-{{prefix}}{{f}}:: {{p}}
+{# generate field safely -#}
+{%- macro generateField(prefix, delimiter, f, p) -%}
+{%- if p and p != "[undefined]"-%}
+{{prefix}}{{f}}{{delimiter}}{{p}}
 {% endif %}
 {%- endmacro -%}
 
 {#- generate fields based on Zotero properties -#}
-{%- macro generateFields(prefix) -%}
+{%- macro generateFields(prefix, delimiter, fields) -%}
 {%- for field, property in fields -%}
 {%- if property.length > 0 -%}
-{{ generateField(prefix, field, property) }}
+{{ generateField(prefix, delimiter, field, property) }}
 {%- endif -%}
 {%- endfor %}
 {%- endmacro -%}
 
-{{printTags(tags)}}
+---
+aliases: ["{{title | replace ('"','')}}"{%- if authors and date-%}, "
+{%- for author in authors -%}
+{{author}}
+{%- endfor -%}
+{{" ("+date | format("YYYY") +") "}}{{title | replace ('"','')}}{{caseTitle | replace ('"','')}}"{%- endif -%}]
+{{generateFields("",": ",frontmatter_fields) -}}
+
+---
 {{ "" }}
+
+{%- if ISBN -%}
+![|200](https://covers.openlibrary.org/b/isbn/{{ISBN | replace ("-","")}}-M.jpg)
+{%- endif -%}
+{{ "" }}
+
+{{printTags(tags)}}
+
 > [!info]- Metadata
-{{generateFields("> ") -}}
+{{generateFields("> ",":: ",inline_fields) -}}
 {% if relations.length > 0 -%}
 > 
 > > [!note]- References:  
